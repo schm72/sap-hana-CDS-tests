@@ -1,0 +1,133 @@
+namespace "sap-hana-CDS-tests"."hanaCDStest";
+
+@Schema: 'SCHM72'
+context hanaCDSfirstTest{
+
+    context Types {
+        type tEntityId : String(4);
+        type tStatus : String(10);
+        type tContractId : String(60);
+        type tCategory : String(60);
+        type tObjectId : String(60);
+        type tAttributeKey : String(60);
+        type tAttributeValue : String(1024);
+        type tURL : String(1024);
+        type tDescription : String(120);
+        type tRoleId : String(10);
+        type tRoleName : String(60);
+        type tBusinessKey : String(10);
+        type tDate : LocalDate;
+        type tBool : String(1);
+        type tUserId : String(12);
+        type tAppId : String(60);
+        type tIdentifier : String(60);
+        type tInteger : Integer;
+        type tHistoryFields {
+            createdBy : tUserId;
+            createdAt : tDate;
+            changedBy : tUserId;
+            changedAt : tDate;
+        }
+    }
+
+    @Catalog.tableType : #COLUMN
+    entity royEntities {
+        key entityId    : Types.tEntityId;
+            description : Types.tDescription;
+            status      : Types.tStatus;
+association_1 : Association[1, 0..1] to royEntityAttributes;
+association_2 : Association[1, 0..1] to Contracts.royContractModels;
+    }
+
+    @Catalog.tableType : #COLUMN
+    entity royEntityAttributes {
+        key entityId       : Types.tEntityId;
+        key category       : Types.tCategory;
+        key objectId       : Types.tObjectId;
+        key attributeKey   : Types.tAttributeKey;
+            attributeValue : Types.tAttributeValue;
+    }
+
+    /*@@layout{"layoutInfo":{"x":13,"y":-187}}*/
+context Contracts {
+        @Catalog.tableType : #COLUMN
+        entity royContractModels {
+            key modelContractId : Types.tContractId;
+                entityId        : Types.tEntityId;
+                description     : Types.tDescription;
+                status          : Types.tStatus;
+                history         : Types.tHistoryFields;
+association_1 : Association[1, 0..1] to Contracts.royContractModelAttributes;
+association_2 : Association[1, 0..1] to Contracts.royContracts;
+        }
+
+        @Catalog.tableType : #COLUMN
+/*@@layout{"layoutInfo":{"x":-459,"y":-96}}*/
+        entity royContractModelAttributes {
+            key modelContractId : Types.tContractId;
+            key category        : Types.tCategory;
+            key objectId        : Types.tObjectId;
+            key attributeKey    : Types.tAttributeKey;
+                attributeValue  : Types.tAttributeValue;
+        }
+
+        @Catalog.tableType : #COLUMN
+/*@@layout{"layoutInfo":{"x":-85,"y":-36}}*/
+        entity royContracts {
+            key contractIdInt   : Types.tContractId;
+                contractId      : Types.tContractId;
+                entityId        : Types.tEntityId;
+                modelContractId : Types.tContractId;
+                description     : Types.tDescription;
+                status          : Types.tStatus;
+                history         : Types.tHistoryFields;
+association_1 : Association[1, 0..1] to Contracts.royContractAttributes;
+        }
+
+        @Catalog.tableType : #COLUMN
+/*@@layout{"layoutInfo":{"x":155,"y":-29}}*/
+        entity royContractAttributes {
+            key contractIdInt  : Types.tContractId;
+            key category       : Types.tCategory;
+            key objectId       : Types.tObjectId;
+            key attributeKey   : Types.tAttributeKey;
+                attributeValue : Types.tAttributeValue;
+        }
+    }
+
+    context Vendors {
+        @Catalog.tableType : #COLUMN
+        entity royVendorRoles {
+            key roleId      : Types.tRoleId;
+                roleName    : Types.tRoleName;
+                description : Types.tDescription;
+                status      : Types.tStatus;
+        }
+    }
+
+    context Tracking {
+        @Catalog.tableType : #COLUMN
+        entity applicationTracker {
+            key appId   : Types.tAppId;
+                appURL  : Types.tURL;
+                history : Types.tHistoryFields;
+        }
+
+        @Catalog.tableType : #COLUMN
+        entity userTracker {
+            key userId         : Types.tUserId;
+            key appId          : Types.tAppId;
+                lastIdentifier : Types.tIdentifier;
+                changeTime     : Types.tDate;
+        }
+
+        @Catalog.tableType : #COLUMN
+        entity applicationHopper {
+            key userId       : Types.tUserId;
+            key appIdFrom    : Types.tAppId;
+            key appIdTo      : Types.tAppId;
+                changeTime   : Types.tDate;
+                validSeconds : Types.tInteger;
+        }
+    }
+};
