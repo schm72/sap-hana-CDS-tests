@@ -1,6 +1,7 @@
 namespace "sap-hana-CDS-tests"."hanaCDStest";
 
 @Schema: 'SCHM72'
+@OData.publish: true
 context hanaCDSfirstTest{
 
     context Types {
